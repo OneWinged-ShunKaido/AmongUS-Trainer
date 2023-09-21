@@ -28,6 +28,11 @@ class Displayer:
     def on_error(self, e: Exception):
         print(f"At {self.last_func_name} [{self.method}] ({e})")
         for key, value in self.args.items():
+            if key == "offsets":
+                value = [hex(offset) for offset in value]
+            elif isinstance(value, int):
+                value = hex(value).upper()
+
             print(f"{key} -> {value}")
 
     @staticmethod
