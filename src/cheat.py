@@ -47,44 +47,54 @@ class CheatTable(GameLauncher, Displayer):
 
         return address
 
-    def change_speed(self, new_speed: int = 0):
+    def change_speed(self, new_speed: float = 3.0):
         self.last_func_name = "change_speed"
         self.address = 0x0144BB70
         self.offsets = [0x5C, 0x4]
         self.end_offset = 0x14
-        self.value = 5.0
+        self.value = new_speed
         self.w2mem()
 
     def force_impostor(self):
         self.last_func_name = "force_impostor"
 
     def w2mem(self):
+        self.update_arg_map()
+        address = self.args.get("address")
+        offsets = self.args.get("offsets")
+        end_offset = self.args.get("end_offset")
+        value = self.args.get("value")
+        self.write2mem(address=address, offsets=offsets, end_offset=end_offset, value=value)
+
+    def write2mem(self, address: int, offsets: List[int], end_offset: int, value: Union[int, float, str, bool]):
         if not self.base:
             self.base = module_from_name(self.process.process_handle, "GameAssembly.dll").lpBaseOfDll
 
+        self.address = address
+        self.offsets = offsets
+        self.end_offset = end_offset
+        self.value = value
         self.update_arg_map()
 
-        if isinstance(self.value, int):
+        if isinstance(value, int):
             method = self.process.write_int
 
-        elif isinstance(self.value, float):
+        elif isinstance(value, float):
             method = self.process.write_float
 
-        elif isinstance(self.value, str):
+        elif isinstance(value, str):
             method = self.process.write_char
 
-        elif isinstance(self.value, bool):
+        elif isinstance(value, bool):
             method = self.process.write_bool
 
         else:
-            self.on_w_type(self.value)
+            self.on_w_type(value)
             return False
 
         self.method = method.__name__
-        method(self.memory_access(self.base + self.address, offsets=self.offsets) + self.end_offset, self.value)
 
-    def wr_custom_cheat(self, address: int, offsets: List[int], end_offset: int, value: Union[int, float, str, bool]):
-        ...
+        method(self.memory_access(base=self.base + address, offsets=offsets) + end_offset, value)
 
     def call_cheat(self, key):
         #   print(f"key called: {key}")
