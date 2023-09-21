@@ -1,6 +1,5 @@
 from typing import List, Union
 from time import sleep
-import inspect
 
 from src.displayer import Displayer
 from src.game import GameLauncher
