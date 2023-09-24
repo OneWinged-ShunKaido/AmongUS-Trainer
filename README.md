@@ -11,7 +11,7 @@ client.write2mem(address=0x1234, offsets=[0x1, 0x2, 0x3], end_offset=0x4, value=
 ```
 
 You can use the frida version too by identifying the pid with `tasklist | findstr "Among Us.exe"` cmd under Windows.
-Then run with `frida -p <pid> -l amogus.js`
+Then run with `frida -p <pid> -l amongus.js`
 ```js
 let client = new AmongClient();
 client.getPlayerSpeed();
