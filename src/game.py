@@ -2,6 +2,7 @@ from time import sleep
 from threading import Thread
 
 from pymem import Pymem
+from pymem.process import module_from_name
 from pymem.exception import ProcessNotFound
 
 
@@ -27,6 +28,8 @@ class GameLauncher:
         while not self.process:
             try:
                 self.process = Pymem(self.proc_name)
+                if not self.base:
+                    self.base = module_from_name(self.process.process_handle, "GameAssembly.dll").lpBaseOfDll
                 self.is_alive = True
                 #   print("hooked to {}".format(self.proc_name))
             except ProcessNotFound:
