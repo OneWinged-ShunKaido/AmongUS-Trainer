@@ -5,8 +5,6 @@ from src.displayer import Displayer
 from src.game import GameLauncher
 from src.offset import OffsetTable
 
-from pymem.process import module_from_name
-
 
 class CheatTable(GameLauncher, Displayer, OffsetTable):
     cmd_map: dict
@@ -20,7 +18,7 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
     def __init__(self):
         super().__init__()
         self.set_commands_map()
-        #    self.save_offsets()
+        self.save_offsets()
 
     def set_commands_map(self):
         self.cmd_map = {
@@ -38,8 +36,9 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
             ))
 
     def memory_access(self, addr: int, offsets: List[int]):
-        #   addr: 41762360
-        #   address: 1831169379072
+        self.address = addr
+        self.offsets = offsets
+        self.update_arg_map()
         address = self.process.read_longlong(self.base + addr)
         for i in range(len(offsets) - 1):
             try:
@@ -60,7 +59,6 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
 
     def change_speed(self, new_speed: float = 3.0):
         self.last_func_name = "change_speed"
-        self.address = 0x027D3E38
         self.address, self.offsets = self.read_cheat_table("speed")
         self.value = new_speed
         current_speed = self.read_mem(addr=self.address, offsets=self.offsets, v_type=float)
@@ -79,9 +77,7 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
         self.last_func_name = "force_impostor"
 
     def read_mem(self, addr: int, offsets: List[int], v_type: Union[Type[int], Type[float], Type[str], Type[bool]] = int):
-        if not self.base:
-            self.base = module_from_name(self.process.process_handle, "GameAssembly.dll").lpBaseOfDll
-        self.base = module_from_name(self.process.process_handle, "GameAssembly.dll").lpBaseOfDll
+
         if v_type == int:
             method = self.process.read_longlong
 
@@ -98,10 +94,10 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
             self.on_v_type(v_type)
             return False
 
+        self.method = method.__name__
         return method(self.memory_access(addr=addr, offsets=offsets))
 
     def w2mem(self):
-        self.update_arg_map()
         address = self.args.get("address")
         offsets = self.args.get("offsets")
         #   end_offset = self.args.get("final_offset")
@@ -109,13 +105,8 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
         self.write2mem(address=address, offsets=offsets, value=value)
 
     def write2mem(self, address: int, offsets: List[int], value: Union[int, float, str, bool]):
-        if not self.base:
-            self.base = module_from_name(self.process.process_handle, "GameAssembly.dll").lpBaseOfDll
 
-        self.address = address
-        self.offsets = offsets
         self.value = value
-        self.update_arg_map()
 
         if isinstance(value, int):
             method = self.process.write_int
