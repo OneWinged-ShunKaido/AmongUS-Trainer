@@ -11,8 +11,6 @@ const gameOffsets = {
     }
 }
 
-var gameAssembly = null;
-
 /*function readFileContent(filePath) {
   try {
     const file = new File(filePath, "r"); // Open the file for reading
