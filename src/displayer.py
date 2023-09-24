@@ -1,5 +1,6 @@
 from os import system
 
+
 class Displayer:
     display_success: bool = False
     display_error: bool = True
@@ -38,3 +39,7 @@ class Displayer:
     @staticmethod
     def on_w_type(e):
         print(f"[!] Type not supported for \"{type(e)}\"")
+
+    @staticmethod
+    def on_v_type(e):
+        print(f"[!] Operation not supported yet for \"{e}\"")
