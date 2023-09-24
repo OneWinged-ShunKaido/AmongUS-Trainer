@@ -18,7 +18,7 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
     def __init__(self):
         super().__init__()
         self.set_commands_map()
-        self.save_offsets()
+        #   self.save_offsets()
 
     def set_commands_map(self):
         self.cmd_map = {
@@ -36,9 +36,9 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
             ))
 
     def memory_access(self, addr: int, offsets: List[int]):
-        self.address = addr
+        """self.address = addr
         self.offsets = offsets
-        self.update_arg_map()
+        self.update_arg_map()"""
         address = self.process.read_longlong(self.base + addr)
         for i in range(len(offsets) - 1):
             try:
@@ -57,20 +57,19 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
 
         return address"""
 
-    def change_speed(self, new_speed: float = 3.0):
+    def change_speed(self):
         self.last_func_name = "change_speed"
-        self.address, self.offsets = self.read_cheat_table("speed")
-        self.value = new_speed
+        self.read_cheat_table("speed")
         current_speed = self.read_mem(addr=self.address, offsets=self.offsets, v_type=float)
-        print(f"current speed: {current_speed}")
+        print(f"current speed {current_speed}")
         new_speed = input("Enter new speed: ")
         try:
-            new_speed = float(new_speed)
+            self.value = float(new_speed)
 
         except ValueError:
-            new_speed = self.default_speed
+            self.value = self.default_speed
 
-        self.value = new_speed
+        self.update_arg_map()
         self.w2mem()
 
     def force_impostor(self):
@@ -107,6 +106,8 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
     def write2mem(self, address: int, offsets: List[int], value: Union[int, float, str, bool]):
 
         self.value = value
+        self.address = address
+        self.offsets = offsets
 
         if isinstance(value, int):
             method = self.process.write_int
