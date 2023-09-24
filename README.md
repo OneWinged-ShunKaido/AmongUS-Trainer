@@ -8,9 +8,11 @@ from src.client import AmongClient
 
 client = AmongClient()
 client.write2mem(address=0x1234, offsets=[0x1, 0x2, 0x3], end_offset=0x4, value=float|int|bool|str|...])
-```js
+```
+
 You can use the frida version too by identifying the pid with `tasklist | findstr "Among Us.exe"` cmd under Windows.
 Then run with `frida -p <pid> -l amogus.js`
+```js
 let client = new AmongClient();
 client.getPlayerSpeed();
 ```
