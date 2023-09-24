@@ -20,7 +20,7 @@ class CheatTable(GameLauncher, Displayer, OffsetTable):
     def __init__(self):
         super().__init__()
         self.set_commands_map()
-        self.save_offsets()
+        #    self.save_offsets()
 
     def set_commands_map(self):
         self.cmd_map = {
